@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="deep_pink">#D5004C</color> <!-- Puedes ajustar este tono si deseas -->
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="light_gray">#AAAAAA</color> <!-- Opcional para placeholder o borders -->
+    <color name="darker_gray">#888888</color>
+    <color name="google_blue">#4285F4</color>
+    <color name="facebook_blue">#3b5998</color>
+</resources>

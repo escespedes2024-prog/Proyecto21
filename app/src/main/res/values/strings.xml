@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">Proyecto2</string>
+    <string name="full_name">nombres</string>
+    <string name="phone_number">apellidos</string>
+    <string name="email">correo electronico</string>
+    <string name="logo">Logo</string>
+    <string name="sign_up">Registro</string>
+    <string name="password">contraseña</string>
+    <string name="by_continuing_you_accept_our_privacy_policy_and_terms_of_use">lei y acepto las politicas de privacidad</string>
+    <string name="next">continuar</string>
+    <string name="already_have_an_account_log_in">Ya tienes cuenta? inicio secion</string>
+    <string name="logo2">Logo</string>
+    <string name="welcome_back">Bienvenido de nuevo</string>
+    <string name="forgot_password">te olvidaste tu contraseña</string>
+    <string name="login">Iniciar secion</string>
+    <string name="or">Or</string>
+    <string name="google">Google</string>
+    <string name="facebook">Facebook</string>
+    <string name="don_t_have_an_account_yet_register">no tienes cuenta? registrate</string>
+    <string name="back">Back</string>
+    <string name="verification">Verificacion</string>
+    <string name="verification_image">Verification image</string>
+    <string name="enter_your_email">ingresa tu correo electronico</string>
+    <string name="send">enviar</string>
+    <string name="reset_password">restablecer contraseña</string>
+    <string name="reset_image">Reset image</string>
+    <string name="password2">contraseña</string>
+    <string name="passwordconfir">confirmar contraseña</string>
+    <string name="continuer">Continar</string>
+    <string name="confirm_password">confirmar contraseña</string>
+    <string name="lista_de_usuarios_registrados">Lista de Usuarios Registrados</string>
+    <string name="usuarios_registrados">Usuarios Registrados</string>
+    <string name="nombre_apellido">Nombre Apellido</string>
+    <string name="correo_ejemplo_com">correo@ejemplo.com</string>
+    <string name="tel_fono_12345678">Teléfono: 12345678</string>
+</resources>
