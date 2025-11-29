@@ -208,19 +208,20 @@ public class DBUser extends SQLiteOpenHelper {
         List<Usuario> listaUsuarios = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String query = "SELECT nombre, apellido, correo, telefono, fecha_nac, contrasena FROM usuarios";
+        String query = "SELECT id, nombre, apellido, correo, telefono, fecha_nac, contrasena FROM usuarios";
 
         Cursor cursor = db.rawQuery(query, null);
 
         if (cursor.moveToFirst()) {
             do {
                 Usuario usuario = new Usuario();
-                usuario.setNombre(cursor.getString(0));
-                usuario.setApellido(cursor.getString(1));
-                usuario.setCorreo(cursor.getString(2));
-                usuario.setTelefono(cursor.getString(3));
-                usuario.setFecha_nac(cursor.getString(4));
-                usuario.setContrasena(cursor.getString(5));
+                usuario.setId(cursor.getInt(0));
+                usuario.setNombre(cursor.getString(1));
+                usuario.setApellido(cursor.getString(2));
+                usuario.setCorreo(cursor.getString(3));
+                usuario.setTelefono(cursor.getString(4));
+                usuario.setFecha_nac(cursor.getString(5));
+                usuario.setContrasena(cursor.getString(6));
 
                 listaUsuarios.add(usuario);
             } while (cursor.moveToNext());
@@ -229,6 +230,73 @@ public class DBUser extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return listaUsuarios;
+    }
+    
+    // ========== MÉTODOS ADICIONALES PARA ADMINISTRACIÓN DE USUARIOS ==========
+    
+    public Usuario obtenerUsuarioPorCorreo(String correo) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query("usuarios", null, "correo=?", 
+                new String[]{correo}, null, null, null);
+        
+        Usuario usuario = null;
+        if (cursor.moveToFirst()) {
+            usuario = new Usuario();
+            usuario.setId(cursor.getInt(0));
+            usuario.setNombre(cursor.getString(1));
+            usuario.setApellido(cursor.getString(2));
+            usuario.setCorreo(cursor.getString(3));
+            usuario.setContrasena(cursor.getString(4));
+            usuario.setTelefono(cursor.getString(5));
+            usuario.setFecha_nac(cursor.getString(6));
+        }
+        cursor.close();
+        db.close();
+        return usuario;
+    }
+    
+    public Usuario obtenerUsuarioPorId(int id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query("usuarios", null, "id=?", 
+                new String[]{String.valueOf(id)}, null, null, null);
+        
+        Usuario usuario = null;
+        if (cursor.moveToFirst()) {
+            usuario = new Usuario();
+            usuario.setId(cursor.getInt(0));
+            usuario.setNombre(cursor.getString(1));
+            usuario.setApellido(cursor.getString(2));
+            usuario.setCorreo(cursor.getString(3));
+            usuario.setContrasena(cursor.getString(4));
+            usuario.setTelefono(cursor.getString(5));
+            usuario.setFecha_nac(cursor.getString(6));
+        }
+        cursor.close();
+        db.close();
+        return usuario;
+    }
+    
+    public boolean actualizarUsuario(Usuario usuario) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues valores = new ContentValues();
+        valores.put("nombre", usuario.getNombre());
+        valores.put("apellido", usuario.getApellido());
+        valores.put("correo", usuario.getCorreo());
+        valores.put("contrasena", usuario.getContrasena());
+        valores.put("telefono", usuario.getTelefono());
+        valores.put("fecha_nac", usuario.getFecha_nac());
+        
+        int resultado = db.update("usuarios", valores, "id=?", 
+                new String[]{String.valueOf(usuario.getId())});
+        db.close();
+        return resultado > 0;
+    }
+    
+    public boolean eliminarUsuario(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int resultado = db.delete("usuarios", "id=?", new String[]{String.valueOf(id)});
+        db.close();
+        return resultado > 0;
     }
     
     // ========== MÉTODOS PARA IGLESIAS ==========

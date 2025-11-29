@@ -33,4 +33,7 @@
     <string name="nombre_apellido">Nombre Apellido</string>
     <string name="correo_ejemplo_com">correo@ejemplo.com</string>
     <string name="tel_fono_12345678">Teléfono: 12345678</string>
+    <string name="biometric_auth_title">Autenticación Biométrica</string>
+    <string name="biometric_auth_subtitle">Coloca tu dedo en el sensor de huella</string>
+    <string name="biometric_cancel">Cancelar</string>
 </resources>

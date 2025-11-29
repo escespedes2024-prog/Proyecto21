@@ -1,12 +1,21 @@
 package com.example.proyecto2;
 
 public class Usuario {
+    int id;
     String nombre;
     String apellido;
     String correo;
     String contrasena;
     String telefono;
     String fecha_nac;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getNombre() {
         return nombre;
