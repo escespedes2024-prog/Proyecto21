@@ -14,7 +14,7 @@ import java.util.List; // Importación necesaria
 import java.util.Locale;
 
 public class DBUser extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
     
     public DBUser(@Nullable Context context){
         super(context, "Iglesia.db", null, DATABASE_VERSION);
@@ -77,6 +77,56 @@ public class DBUser extends SQLiteOpenHelper {
                 "fecha_creacion TEXT," +
                 "descripcion TEXT," +
                 "id_iglesia INTEGER," +
+                "FOREIGN KEY(id_iglesia) REFERENCES iglesias(id))");
+        
+        // Tabla de docentes
+        db.execSQL("CREATE TABLE docentes(" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "nombre TEXT NOT NULL," +
+                "apellido TEXT," +
+                "email TEXT," +
+                "telefono TEXT," +
+                "especialidad TEXT," +
+                "id_iglesia INTEGER," +
+                "FOREIGN KEY(id_iglesia) REFERENCES iglesias(id))");
+        
+        // Tabla de cursos
+        db.execSQL("CREATE TABLE cursos(" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "nombre TEXT NOT NULL," +
+                "descripcion TEXT," +
+                "horario TEXT," +
+                "id_docente INTEGER," +
+                "id_iglesia INTEGER," +
+                "FOREIGN KEY(id_docente) REFERENCES docentes(id)," +
+                "FOREIGN KEY(id_iglesia) REFERENCES iglesias(id))");
+        
+        // Tabla de estudiantes
+        db.execSQL("CREATE TABLE estudiantes(" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "nombre TEXT NOT NULL," +
+                "apellido TEXT," +
+                "email TEXT," +
+                "telefono TEXT," +
+                "fecha_nacimiento TEXT," +
+                "id_curso INTEGER," +
+                "id_iglesia INTEGER," +
+                "FOREIGN KEY(id_curso) REFERENCES cursos(id)," +
+                "FOREIGN KEY(id_iglesia) REFERENCES iglesias(id))");
+        
+        // Tabla de asistencias
+        db.execSQL("CREATE TABLE asistencias(" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_curso INTEGER," +
+                "id_estudiante INTEGER," +
+                "id_docente INTEGER," +
+                "fecha TEXT NOT NULL," +
+                "estado TEXT," +
+                "observaciones TEXT," +
+                "id_iglesia INTEGER," +
+                "FOREIGN KEY(id_curso) REFERENCES cursos(id)," +
+                "FOREIGN KEY(id_estudiante) REFERENCES estudiantes(id)," +
+                "FOREIGN KEY(id_docente) REFERENCES docentes(id)," +
                 "FOREIGN KEY(id_iglesia) REFERENCES iglesias(id))");
         
         // Insertar iglesia por defecto
@@ -159,6 +209,55 @@ public class DBUser extends SQLiteOpenHelper {
                     "fecha_creacion TEXT," +
                     "descripcion TEXT," +
                     "id_iglesia INTEGER," +
+                    "FOREIGN KEY(id_iglesia) REFERENCES iglesias(id))");
+        }
+        
+        if (oldVersion < 4) {
+            // Crear tablas de cursos, docentes, estudiantes y asistencias
+            db.execSQL("CREATE TABLE IF NOT EXISTS docentes(" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "nombre TEXT NOT NULL," +
+                    "apellido TEXT," +
+                    "email TEXT," +
+                    "telefono TEXT," +
+                    "especialidad TEXT," +
+                    "id_iglesia INTEGER," +
+                    "FOREIGN KEY(id_iglesia) REFERENCES iglesias(id))");
+            
+            db.execSQL("CREATE TABLE IF NOT EXISTS cursos(" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "nombre TEXT NOT NULL," +
+                    "descripcion TEXT," +
+                    "horario TEXT," +
+                    "id_docente INTEGER," +
+                    "id_iglesia INTEGER," +
+                    "FOREIGN KEY(id_docente) REFERENCES docentes(id)," +
+                    "FOREIGN KEY(id_iglesia) REFERENCES iglesias(id))");
+            
+            db.execSQL("CREATE TABLE IF NOT EXISTS estudiantes(" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "nombre TEXT NOT NULL," +
+                    "apellido TEXT," +
+                    "email TEXT," +
+                    "telefono TEXT," +
+                    "fecha_nacimiento TEXT," +
+                    "id_curso INTEGER," +
+                    "id_iglesia INTEGER," +
+                    "FOREIGN KEY(id_curso) REFERENCES cursos(id)," +
+                    "FOREIGN KEY(id_iglesia) REFERENCES iglesias(id))");
+            
+            db.execSQL("CREATE TABLE IF NOT EXISTS asistencias(" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "id_curso INTEGER," +
+                    "id_estudiante INTEGER," +
+                    "id_docente INTEGER," +
+                    "fecha TEXT NOT NULL," +
+                    "estado TEXT," +
+                    "observaciones TEXT," +
+                    "id_iglesia INTEGER," +
+                    "FOREIGN KEY(id_curso) REFERENCES cursos(id)," +
+                    "FOREIGN KEY(id_estudiante) REFERENCES estudiantes(id)," +
+                    "FOREIGN KEY(id_docente) REFERENCES docentes(id)," +
                     "FOREIGN KEY(id_iglesia) REFERENCES iglesias(id))");
         }
     }
@@ -546,5 +645,373 @@ public class DBUser extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return documento;
+    }
+    
+    // ========== MÉTODOS PARA DOCENTES ==========
+    
+    public boolean insertarDocente(Docente docente) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues valores = new ContentValues();
+        valores.put("nombre", docente.getNombre());
+        valores.put("apellido", docente.getApellido());
+        valores.put("email", docente.getEmail());
+        valores.put("telefono", docente.getTelefono());
+        valores.put("especialidad", docente.getEspecialidad());
+        valores.put("id_iglesia", docente.getIdIglesia());
+        
+        long resultado = db.insert("docentes", null, valores);
+        db.close();
+        return resultado != -1;
+    }
+    
+    public List<Docente> obtenerDocentes(int idIglesia) {
+        List<Docente> lista = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query("docentes", null, "id_iglesia=?", 
+                new String[]{String.valueOf(idIglesia)}, null, null, "nombre ASC");
+        
+        if (cursor.moveToFirst()) {
+            do {
+                Docente docente = new Docente();
+                docente.setId(cursor.getInt(0));
+                docente.setNombre(cursor.getString(1));
+                docente.setApellido(cursor.getString(2));
+                docente.setEmail(cursor.getString(3));
+                docente.setTelefono(cursor.getString(4));
+                docente.setEspecialidad(cursor.getString(5));
+                docente.setIdIglesia(cursor.getInt(6));
+                lista.add(docente);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return lista;
+    }
+    
+    public Docente obtenerDocente(int id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query("docentes", null, "id=?", 
+                new String[]{String.valueOf(id)}, null, null, null);
+        
+        Docente docente = null;
+        if (cursor.moveToFirst()) {
+            docente = new Docente();
+            docente.setId(cursor.getInt(0));
+            docente.setNombre(cursor.getString(1));
+            docente.setApellido(cursor.getString(2));
+            docente.setEmail(cursor.getString(3));
+            docente.setTelefono(cursor.getString(4));
+            docente.setEspecialidad(cursor.getString(5));
+            docente.setIdIglesia(cursor.getInt(6));
+        }
+        cursor.close();
+        db.close();
+        return docente;
+    }
+    
+    public boolean actualizarDocente(Docente docente) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues valores = new ContentValues();
+        valores.put("nombre", docente.getNombre());
+        valores.put("apellido", docente.getApellido());
+        valores.put("email", docente.getEmail());
+        valores.put("telefono", docente.getTelefono());
+        valores.put("especialidad", docente.getEspecialidad());
+        
+        int resultado = db.update("docentes", valores, "id=?", 
+                new String[]{String.valueOf(docente.getId())});
+        db.close();
+        return resultado > 0;
+    }
+    
+    public boolean eliminarDocente(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int resultado = db.delete("docentes", "id=?", new String[]{String.valueOf(id)});
+        db.close();
+        return resultado > 0;
+    }
+    
+    // ========== MÉTODOS PARA CURSOS ==========
+    
+    public boolean insertarCurso(Curso curso) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues valores = new ContentValues();
+        valores.put("nombre", curso.getNombre());
+        valores.put("descripcion", curso.getDescripcion());
+        valores.put("horario", curso.getHorario());
+        valores.put("id_docente", curso.getIdDocente());
+        valores.put("id_iglesia", curso.getIdIglesia());
+        
+        long resultado = db.insert("cursos", null, valores);
+        db.close();
+        return resultado != -1;
+    }
+    
+    public List<Curso> obtenerCursos(int idIglesia) {
+        List<Curso> lista = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query("cursos", null, "id_iglesia=?", 
+                new String[]{String.valueOf(idIglesia)}, null, null, "nombre ASC");
+        
+        if (cursor.moveToFirst()) {
+            do {
+                Curso curso = new Curso();
+                curso.setId(cursor.getInt(0));
+                curso.setNombre(cursor.getString(1));
+                curso.setDescripcion(cursor.getString(2));
+                curso.setHorario(cursor.getString(3));
+                curso.setIdDocente(cursor.getInt(4));
+                curso.setIdIglesia(cursor.getInt(5));
+                lista.add(curso);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return lista;
+    }
+    
+    public Curso obtenerCurso(int id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query("cursos", null, "id=?", 
+                new String[]{String.valueOf(id)}, null, null, null);
+        
+        Curso curso = null;
+        if (cursor.moveToFirst()) {
+            curso = new Curso();
+            curso.setId(cursor.getInt(0));
+            curso.setNombre(cursor.getString(1));
+            curso.setDescripcion(cursor.getString(2));
+            curso.setHorario(cursor.getString(3));
+            curso.setIdDocente(cursor.getInt(4));
+            curso.setIdIglesia(cursor.getInt(5));
+        }
+        cursor.close();
+        db.close();
+        return curso;
+    }
+    
+    public boolean actualizarCurso(Curso curso) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues valores = new ContentValues();
+        valores.put("nombre", curso.getNombre());
+        valores.put("descripcion", curso.getDescripcion());
+        valores.put("horario", curso.getHorario());
+        valores.put("id_docente", curso.getIdDocente());
+        
+        int resultado = db.update("cursos", valores, "id=?", 
+                new String[]{String.valueOf(curso.getId())});
+        db.close();
+        return resultado > 0;
+    }
+    
+    public boolean eliminarCurso(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int resultado = db.delete("cursos", "id=?", new String[]{String.valueOf(id)});
+        db.close();
+        return resultado > 0;
+    }
+    
+    // ========== MÉTODOS PARA ESTUDIANTES ==========
+    
+    public boolean insertarEstudiante(Estudiante estudiante) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues valores = new ContentValues();
+        valores.put("nombre", estudiante.getNombre());
+        valores.put("apellido", estudiante.getApellido());
+        valores.put("email", estudiante.getEmail());
+        valores.put("telefono", estudiante.getTelefono());
+        valores.put("fecha_nacimiento", estudiante.getFechaNacimiento());
+        valores.put("id_curso", estudiante.getIdCurso());
+        valores.put("id_iglesia", estudiante.getIdIglesia());
+        
+        long resultado = db.insert("estudiantes", null, valores);
+        db.close();
+        return resultado != -1;
+    }
+    
+    public List<Estudiante> obtenerEstudiantes(int idIglesia) {
+        List<Estudiante> lista = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query("estudiantes", null, "id_iglesia=?", 
+                new String[]{String.valueOf(idIglesia)}, null, null, "nombre ASC");
+        
+        if (cursor.moveToFirst()) {
+            do {
+                Estudiante estudiante = new Estudiante();
+                estudiante.setId(cursor.getInt(0));
+                estudiante.setNombre(cursor.getString(1));
+                estudiante.setApellido(cursor.getString(2));
+                estudiante.setEmail(cursor.getString(3));
+                estudiante.setTelefono(cursor.getString(4));
+                estudiante.setFechaNacimiento(cursor.getString(5));
+                estudiante.setIdCurso(cursor.getInt(6));
+                estudiante.setIdIglesia(cursor.getInt(7));
+                lista.add(estudiante);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return lista;
+    }
+    
+    public List<Estudiante> obtenerEstudiantesPorCurso(int idCurso) {
+        List<Estudiante> lista = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query("estudiantes", null, "id_curso=?", 
+                new String[]{String.valueOf(idCurso)}, null, null, "nombre ASC");
+        
+        if (cursor.moveToFirst()) {
+            do {
+                Estudiante estudiante = new Estudiante();
+                estudiante.setId(cursor.getInt(0));
+                estudiante.setNombre(cursor.getString(1));
+                estudiante.setApellido(cursor.getString(2));
+                estudiante.setEmail(cursor.getString(3));
+                estudiante.setTelefono(cursor.getString(4));
+                estudiante.setFechaNacimiento(cursor.getString(5));
+                estudiante.setIdCurso(cursor.getInt(6));
+                estudiante.setIdIglesia(cursor.getInt(7));
+                lista.add(estudiante);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return lista;
+    }
+    
+    public Estudiante obtenerEstudiante(int id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query("estudiantes", null, "id=?", 
+                new String[]{String.valueOf(id)}, null, null, null);
+        
+        Estudiante estudiante = null;
+        if (cursor.moveToFirst()) {
+            estudiante = new Estudiante();
+            estudiante.setId(cursor.getInt(0));
+            estudiante.setNombre(cursor.getString(1));
+            estudiante.setApellido(cursor.getString(2));
+            estudiante.setEmail(cursor.getString(3));
+            estudiante.setTelefono(cursor.getString(4));
+            estudiante.setFechaNacimiento(cursor.getString(5));
+            estudiante.setIdCurso(cursor.getInt(6));
+            estudiante.setIdIglesia(cursor.getInt(7));
+        }
+        cursor.close();
+        db.close();
+        return estudiante;
+    }
+    
+    public boolean actualizarEstudiante(Estudiante estudiante) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues valores = new ContentValues();
+        valores.put("nombre", estudiante.getNombre());
+        valores.put("apellido", estudiante.getApellido());
+        valores.put("email", estudiante.getEmail());
+        valores.put("telefono", estudiante.getTelefono());
+        valores.put("fecha_nacimiento", estudiante.getFechaNacimiento());
+        valores.put("id_curso", estudiante.getIdCurso());
+        
+        int resultado = db.update("estudiantes", valores, "id=?", 
+                new String[]{String.valueOf(estudiante.getId())});
+        db.close();
+        return resultado > 0;
+    }
+    
+    public boolean eliminarEstudiante(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int resultado = db.delete("estudiantes", "id=?", new String[]{String.valueOf(id)});
+        db.close();
+        return resultado > 0;
+    }
+    
+    // ========== MÉTODOS PARA ASISTENCIAS ==========
+    
+    public boolean insertarAsistencia(Asistencia asistencia) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues valores = new ContentValues();
+        valores.put("id_curso", asistencia.getIdCurso());
+        valores.put("id_estudiante", asistencia.getIdEstudiante());
+        valores.put("id_docente", asistencia.getIdDocente());
+        valores.put("fecha", asistencia.getFecha());
+        valores.put("estado", asistencia.getEstado());
+        valores.put("observaciones", asistencia.getObservaciones());
+        valores.put("id_iglesia", asistencia.getIdIglesia());
+        
+        long resultado = db.insert("asistencias", null, valores);
+        db.close();
+        return resultado != -1;
+    }
+    
+    public List<Asistencia> obtenerAsistencias(int idIglesia) {
+        List<Asistencia> lista = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query("asistencias", null, "id_iglesia=?", 
+                new String[]{String.valueOf(idIglesia)}, null, null, "fecha DESC");
+        
+        if (cursor.moveToFirst()) {
+            do {
+                Asistencia asistencia = new Asistencia();
+                asistencia.setId(cursor.getInt(0));
+                asistencia.setIdCurso(cursor.getInt(1));
+                asistencia.setIdEstudiante(cursor.getInt(2));
+                asistencia.setIdDocente(cursor.getInt(3));
+                asistencia.setFecha(cursor.getString(4));
+                asistencia.setEstado(cursor.getString(5));
+                asistencia.setObservaciones(cursor.getString(6));
+                asistencia.setIdIglesia(cursor.getInt(7));
+                lista.add(asistencia);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return lista;
+    }
+    
+    public List<Asistencia> obtenerAsistenciasPorCurso(int idCurso) {
+        List<Asistencia> lista = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query("asistencias", null, "id_curso=?", 
+                new String[]{String.valueOf(idCurso)}, null, null, "fecha DESC");
+        
+        if (cursor.moveToFirst()) {
+            do {
+                Asistencia asistencia = new Asistencia();
+                asistencia.setId(cursor.getInt(0));
+                asistencia.setIdCurso(cursor.getInt(1));
+                asistencia.setIdEstudiante(cursor.getInt(2));
+                asistencia.setIdDocente(cursor.getInt(3));
+                asistencia.setFecha(cursor.getString(4));
+                asistencia.setEstado(cursor.getString(5));
+                asistencia.setObservaciones(cursor.getString(6));
+                asistencia.setIdIglesia(cursor.getInt(7));
+                lista.add(asistencia);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return lista;
+    }
+    
+    public boolean actualizarAsistencia(Asistencia asistencia) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues valores = new ContentValues();
+        valores.put("id_curso", asistencia.getIdCurso());
+        valores.put("id_estudiante", asistencia.getIdEstudiante());
+        valores.put("id_docente", asistencia.getIdDocente());
+        valores.put("fecha", asistencia.getFecha());
+        valores.put("estado", asistencia.getEstado());
+        valores.put("observaciones", asistencia.getObservaciones());
+        
+        int resultado = db.update("asistencias", valores, "id=?", 
+                new String[]{String.valueOf(asistencia.getId())});
+        db.close();
+        return resultado > 0;
+    }
+    
+    public boolean eliminarAsistencia(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int resultado = db.delete("asistencias", "id=?", new String[]{String.valueOf(id)});
+        db.close();
+        return resultado > 0;
     }
 }
