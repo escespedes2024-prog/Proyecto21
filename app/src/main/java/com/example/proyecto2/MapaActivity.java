@@ -35,8 +35,8 @@ public class MapaActivity extends AppCompatActivity {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private int idIglesia = 1;
     private MyLocationNewOverlay myLocationOverlay;
-    private static final double LATITUD_DEFECTO = -17.75596;
-    private static final double LONGITUD_DEFECTO = -63.17915;
+    private static final double LATITUD_DEFECTO = -17.755844;
+    private static final double LONGITUD_DEFECTO = -63.182488;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

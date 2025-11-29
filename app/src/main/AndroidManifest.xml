@@ -70,6 +70,18 @@
             android:name=".CursosActivity"
             android:exported="false" />
         <activity
+            android:name=".GestionCursosActivity"
+            android:exported="false" />
+        <activity
+            android:name=".GestionDocentesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".GestionEstudiantesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".GestionAsistenciasActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
