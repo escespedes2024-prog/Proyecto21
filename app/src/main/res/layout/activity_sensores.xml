@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#121212"
     android:padding="16dp"
     tools:context=".SensoresActivity">
 
@@ -18,7 +19,7 @@
             android:text="Escáner de Documentos"
             android:textSize="24sp"
             android:textStyle="bold"
-            android:textColor="@android:color/black"
+            android:textColor="#FFFFFF"
             android:layout_marginBottom="24dp" />
 
         <!-- Previsualización de la imagen -->
@@ -26,8 +27,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp">
+            app:cardCornerRadius="16dp"
+            app:cardElevation="8dp"
+            app:cardBackgroundColor="#1E1E1E">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -41,7 +43,7 @@
                     android:text="Vista Previa del Documento"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="@android:color/black"
+                    android:textColor="#FFFFFF"
                     android:layout_marginBottom="16dp" />
 
                 <ImageView
@@ -58,7 +60,7 @@
                     android:layout_height="wrap_content"
                     android:text="No hay documento capturado"
                     android:textSize="14sp"
-                    android:textColor="@android:color/darker_gray"
+                    android:textColor="#B0B0B0"
                     android:layout_gravity="center"
                     android:layout_marginTop="16dp"
                     android:id="@+id/textNoImagen" />
@@ -136,7 +138,7 @@
             android:text="Documentos Guardados"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="@android:color/black"
+            android:textColor="#FFFFFF"
             android:layout_marginBottom="16dp" />
 
         <androidx.recyclerview.widget.RecyclerView

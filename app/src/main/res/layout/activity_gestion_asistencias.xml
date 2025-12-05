@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#121212"
     android:padding="16dp"
     tools:context=".GestionAsistenciasActivity">
 
@@ -18,7 +19,7 @@
             android:text="Gestión de Asistencias"
             android:textSize="24sp"
             android:textStyle="bold"
-            android:textColor="@android:color/black"
+            android:textColor="#FFFFFF"
             android:layout_marginBottom="24dp" />
 
         <Spinner
@@ -52,6 +53,7 @@
             android:text="Lista de Estudiantes del Curso:"
             android:textSize="16sp"
             android:textStyle="bold"
+            android:textColor="#FFFFFF"
             android:layout_marginBottom="8dp" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -74,7 +76,7 @@
             android:text="Historial de Asistencias"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="@android:color/black"
+            android:textColor="#FFFFFF"
             android:layout_marginBottom="16dp" />
 
         <androidx.recyclerview.widget.RecyclerView

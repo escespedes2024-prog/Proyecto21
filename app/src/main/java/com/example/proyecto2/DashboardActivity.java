@@ -14,7 +14,7 @@ public class DashboardActivity extends AppCompatActivity {
 
     private DBUser dbUser;
     private TextView nombreIglesia;
-    private CardView cardEventos, cardMiembros, cardMapa, cardSensores, cardUsuarios, cardCursos, cardConfiguracion;
+    private CardView cardEventos, cardMiembros, cardMapa, cardSensores, cardUsuarios, cardCursos, cardProductos, cardConfiguracion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +30,7 @@ public class DashboardActivity extends AppCompatActivity {
         cardSensores = findViewById(R.id.cardSensores);
         cardUsuarios = findViewById(R.id.cardUsuarios);
         cardCursos = findViewById(R.id.cardCursos);
+        cardProductos = findViewById(R.id.cardProductos);
         cardConfiguracion = findViewById(R.id.cardConfiguracion);
 
         // Cargar información de la iglesia principal (ID 1 por defecto)
@@ -80,6 +81,14 @@ public class DashboardActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(DashboardActivity.this, CursosActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        cardProductos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(DashboardActivity.this, ProductosActivity.class);
                 startActivity(intent);
             }
         });
