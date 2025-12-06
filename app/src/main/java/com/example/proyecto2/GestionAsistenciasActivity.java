@@ -6,6 +6,7 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,7 +19,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class GestionAsistenciasActivity extends AppCompatActivity {
+public class GestionAsistenciasActivity extends AppCompatActivity implements AsistenciaAdapter.OnAsistenciaClickListener {
 
     private DBUser dbUser;
     private int idIglesia = 1;
@@ -62,6 +63,9 @@ public class GestionAsistenciasActivity extends AppCompatActivity {
 
     private void configurarListeners() {
         btnGuardarAsistencia.setOnClickListener(v -> guardarAsistencia());
+        
+        // Agregar formateador de fecha
+        asistenciaFechaInput.addTextChangedListener(new DateTextWatcher(asistenciaFechaInput, "yyyy-MM-dd"));
         
         spinnerCursoAsistencia.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
             @Override
@@ -175,11 +179,36 @@ public class GestionAsistenciasActivity extends AppCompatActivity {
     }
 
     private void actualizarRecyclerViewEstudiantesAsistencia() {
-        // Implementar adaptador personalizado si es necesario
+        EstudianteAdapter adapter = new EstudianteAdapter(this, estudiantesCursoSeleccionado);
+        recyclerViewEstudiantesAsistencia.setAdapter(adapter);
     }
 
     private void actualizarRecyclerViewAsistencias() {
-        // Implementar adaptador personalizado si es necesario
+        AsistenciaAdapter adapter = new AsistenciaAdapter(this, listaAsistencias, this);
+        recyclerViewAsistencias.setAdapter(adapter);
+    }
+
+    @Override
+    public void onAsistenciaClick(Asistencia asistencia) {
+        // Para editar asistencia, podrías abrir un diálogo o navegar a otra actividad
+        Toast.makeText(this, "Funcionalidad de edición de asistencia en desarrollo", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onAsistenciaDelete(Asistencia asistencia) {
+        new AlertDialog.Builder(this)
+                .setTitle("Eliminar Asistencia")
+                .setMessage("¿Estás seguro de que deseas eliminar esta asistencia?")
+                .setPositiveButton("Eliminar", (dialog, which) -> {
+                    if (dbUser.eliminarAsistencia(asistencia.getId())) {
+                        Toast.makeText(this, "Asistencia eliminada exitosamente", Toast.LENGTH_SHORT).show();
+                        cargarAsistencias();
+                    } else {
+                        Toast.makeText(this, "Error al eliminar asistencia", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
     }
 
     @Override

@@ -16,31 +16,40 @@
         android:padding="16dp">
 
         <TextView
-            android:id="@+id/tvUserName"
+            android:id="@+id/tvEstudianteNombre"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
+            android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="#FFFFFF"
-            android:text="@string/nombre_apellido"/>
+            android:text="Nombre Apellido"/>
 
         <TextView
-            android:id="@+id/tvUserEmail"
+            android:id="@+id/tvEstudianteEmail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
             android:textColor="#B0B0B0"
             android:layout_marginTop="4dp"
-            android:text="@string/correo_ejemplo_com"/>
+            android:text="email@ejemplo.com"/>
 
         <TextView
-            android:id="@+id/tvUserPhone"
+            android:id="@+id/tvEstudianteTelefono"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
             android:textColor="#B0B0B0"
             android:layout_marginTop="4dp"
-            android:text="@string/tel_fono_12345678"/>
+            android:text="Tel: 12345678"/>
+
+        <TextView
+            android:id="@+id/tvEstudianteCurso"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="#4CAF50"
+            android:layout_marginTop="4dp"
+            android:text="Curso: Matemáticas"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -50,7 +59,7 @@
             android:gravity="end">
 
             <Button
-                android:id="@+id/btnEditarUsuario"
+                android:id="@+id/btnEditarEstudiante"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Editar"
@@ -59,7 +68,7 @@
                 android:visibility="gone" />
 
             <Button
-                android:id="@+id/btnEliminarUsuario"
+                android:id="@+id/btnEliminarEstudiante"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Eliminar"
@@ -70,3 +79,4 @@
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>
+

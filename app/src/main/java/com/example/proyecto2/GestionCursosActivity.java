@@ -6,6 +6,7 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,7 +16,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GestionCursosActivity extends AppCompatActivity {
+public class GestionCursosActivity extends AppCompatActivity implements CursoAdapter.OnCursoClickListener {
 
     private DBUser dbUser;
     private int idIglesia = 1;
@@ -128,7 +129,47 @@ public class GestionCursosActivity extends AppCompatActivity {
     }
 
     private void actualizarRecyclerViewCursos() {
-        // Implementar adaptador personalizado si es necesario
+        CursoAdapter adapter = new CursoAdapter(this, listaCursos, this);
+        recyclerViewCursos.setAdapter(adapter);
+    }
+
+    @Override
+    public void onCursoClick(Curso curso) {
+        cursoSeleccionado = curso;
+        
+        cursoNombreInput.setText(curso.getNombre());
+        cursoDescripcionInput.setText(curso.getDescripcion());
+        cursoHorarioInput.setText(curso.getHorario());
+        
+        // Seleccionar docente en spinner
+        for (int i = 0; i < listaDocentes.size(); i++) {
+            if (listaDocentes.get(i).getId() == curso.getIdDocente()) {
+                spinnerDocenteCurso.setSelection(i + 1);
+                break;
+            }
+        }
+        
+        btnGuardarCurso.setText("Actualizar Curso");
+    }
+
+    @Override
+    public void onCursoDelete(Curso curso) {
+        new AlertDialog.Builder(this)
+                .setTitle("Eliminar Curso")
+                .setMessage("¿Estás seguro de que deseas eliminar el curso \"" + curso.getNombre() + "\"?")
+                .setPositiveButton("Eliminar", (dialog, which) -> {
+                    if (dbUser.eliminarCurso(curso.getId())) {
+                        Toast.makeText(this, "Curso eliminado exitosamente", Toast.LENGTH_SHORT).show();
+                        if (cursoSeleccionado != null && cursoSeleccionado.getId() == curso.getId()) {
+                            limpiarFormularioCurso();
+                        }
+                        cargarCursos();
+                    } else {
+                        Toast.makeText(this, "Error al eliminar curso", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
     }
 
     @Override

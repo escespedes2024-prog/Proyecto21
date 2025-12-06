@@ -6,6 +6,7 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,7 +16,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GestionEstudiantesActivity extends AppCompatActivity {
+public class GestionEstudiantesActivity extends AppCompatActivity implements EstudianteAdapter.OnEstudianteClickListener {
 
     private DBUser dbUser;
     private int idIglesia = 1;
@@ -58,6 +59,9 @@ public class GestionEstudiantesActivity extends AppCompatActivity {
 
     private void configurarListeners() {
         btnGuardarEstudiante.setOnClickListener(v -> guardarEstudiante());
+        
+        // Agregar formateador de fecha
+        estudianteFechaNacimientoInput.addTextChangedListener(new DateTextWatcher(estudianteFechaNacimientoInput, "yyyy-MM-dd"));
     }
 
     private void cargarDatos() {
@@ -135,7 +139,49 @@ public class GestionEstudiantesActivity extends AppCompatActivity {
     }
 
     private void actualizarRecyclerViewEstudiantes() {
-        // Implementar adaptador personalizado si es necesario
+        EstudianteAdapter adapter = new EstudianteAdapter(this, listaEstudiantes, this);
+        recyclerViewEstudiantes.setAdapter(adapter);
+    }
+
+    @Override
+    public void onEstudianteClick(Estudiante estudiante) {
+        estudianteSeleccionado = estudiante;
+        
+        estudianteNombreInput.setText(estudiante.getNombre());
+        estudianteApellidoInput.setText(estudiante.getApellido());
+        estudianteEmailInput.setText(estudiante.getEmail());
+        estudianteTelefonoInput.setText(estudiante.getTelefono());
+        estudianteFechaNacimientoInput.setText(estudiante.getFechaNacimiento());
+        
+        // Seleccionar curso en spinner
+        for (int i = 0; i < listaCursos.size(); i++) {
+            if (listaCursos.get(i).getId() == estudiante.getIdCurso()) {
+                spinnerCursoEstudiante.setSelection(i + 1);
+                break;
+            }
+        }
+        
+        btnGuardarEstudiante.setText("Actualizar Estudiante");
+    }
+
+    @Override
+    public void onEstudianteDelete(Estudiante estudiante) {
+        new AlertDialog.Builder(this)
+                .setTitle("Eliminar Estudiante")
+                .setMessage("¿Estás seguro de que deseas eliminar a " + estudiante.getNombreCompleto() + "?")
+                .setPositiveButton("Eliminar", (dialog, which) -> {
+                    if (dbUser.eliminarEstudiante(estudiante.getId())) {
+                        Toast.makeText(this, "Estudiante eliminado exitosamente", Toast.LENGTH_SHORT).show();
+                        if (estudianteSeleccionado != null && estudianteSeleccionado.getId() == estudiante.getId()) {
+                            limpiarFormularioEstudiante();
+                        }
+                        cargarEstudiantes();
+                    } else {
+                        Toast.makeText(this, "Error al eliminar estudiante", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
     }
 
     @Override

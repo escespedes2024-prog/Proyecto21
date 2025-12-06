@@ -520,6 +520,21 @@ public class DBUser extends SQLiteOpenHelper {
         return lista;
     }
     
+    public boolean actualizarEvento(Evento evento) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues valores = new ContentValues();
+        valores.put("titulo", evento.getTitulo());
+        valores.put("descripcion", evento.getDescripcion());
+        valores.put("fecha", evento.getFecha());
+        valores.put("hora", evento.getHora());
+        valores.put("tipo", evento.getTipo());
+        
+        int resultado = db.update("eventos", valores, "id=?", 
+                new String[]{String.valueOf(evento.getId())});
+        db.close();
+        return resultado > 0;
+    }
+    
     public boolean eliminarEvento(int id) {
         SQLiteDatabase db = this.getWritableDatabase();
         int resultado = db.delete("eventos", "id=?", new String[]{String.valueOf(id)});
@@ -572,6 +587,24 @@ public class DBUser extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return lista;
+    }
+    
+    public boolean actualizarMiembro(Miembro miembro) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues valores = new ContentValues();
+        valores.put("nombre", miembro.getNombre());
+        valores.put("apellido", miembro.getApellido());
+        valores.put("email", miembro.getEmail());
+        valores.put("telefono", miembro.getTelefono());
+        valores.put("direccion", miembro.getDireccion());
+        valores.put("fecha_nacimiento", miembro.getFechaNacimiento());
+        valores.put("fecha_ingreso", miembro.getFechaIngreso());
+        valores.put("rol", miembro.getRol());
+        
+        int resultado = db.update("miembros", valores, "id=?", 
+                new String[]{String.valueOf(miembro.getId())});
+        db.close();
+        return resultado > 0;
     }
     
     public boolean eliminarMiembro(int id) {

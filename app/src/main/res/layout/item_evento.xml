@@ -16,31 +16,57 @@
         android:padding="16dp">
 
         <TextView
-            android:id="@+id/tvUserName"
+            android:id="@+id/tvEventoTitulo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
+            android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="#FFFFFF"
-            android:text="@string/nombre_apellido"/>
+            android:text="Título del Evento"/>
 
         <TextView
-            android:id="@+id/tvUserEmail"
+            android:id="@+id/tvEventoDescripcion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
             android:textColor="#B0B0B0"
             android:layout_marginTop="4dp"
-            android:text="@string/correo_ejemplo_com"/>
+            android:text="Descripción del evento"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
+
+            <TextView
+                android:id="@+id/tvEventoFecha"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="12sp"
+                android:textColor="#BB86FC"
+                android:text="Fecha: 2024-01-01"/>
+
+            <TextView
+                android:id="@+id/tvEventoHora"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="12sp"
+                android:textColor="#BB86FC"
+                android:text="Hora: 10:00"/>
+
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/tvUserPhone"
+            android:id="@+id/tvEventoTipo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="#B0B0B0"
+            android:textSize="12sp"
+            android:textColor="#4CAF50"
             android:layout_marginTop="4dp"
-            android:text="@string/tel_fono_12345678"/>
+            android:text="Tipo: General"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -50,7 +76,7 @@
             android:gravity="end">
 
             <Button
-                android:id="@+id/btnEditarUsuario"
+                android:id="@+id/btnEditarEvento"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Editar"
@@ -59,7 +85,7 @@
                 android:visibility="gone" />
 
             <Button
-                android:id="@+id/btnEliminarUsuario"
+                android:id="@+id/btnEliminarEvento"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Eliminar"
@@ -70,3 +96,4 @@
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>
+

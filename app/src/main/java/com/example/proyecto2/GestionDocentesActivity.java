@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,7 +14,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GestionDocentesActivity extends AppCompatActivity {
+public class GestionDocentesActivity extends AppCompatActivity implements DocenteAdapter.OnDocenteClickListener {
 
     private DBUser dbUser;
     private int idIglesia = 1;
@@ -100,7 +101,41 @@ public class GestionDocentesActivity extends AppCompatActivity {
     }
 
     private void actualizarRecyclerViewDocentes() {
-        // Implementar adaptador personalizado si es necesario
+        DocenteAdapter adapter = new DocenteAdapter(this, listaDocentes, this);
+        recyclerViewDocentes.setAdapter(adapter);
+    }
+
+    @Override
+    public void onDocenteClick(Docente docente) {
+        docenteSeleccionado = docente;
+        
+        docenteNombreInput.setText(docente.getNombre());
+        docenteApellidoInput.setText(docente.getApellido());
+        docenteEmailInput.setText(docente.getEmail());
+        docenteTelefonoInput.setText(docente.getTelefono());
+        docenteEspecialidadInput.setText(docente.getEspecialidad());
+        
+        btnGuardarDocente.setText("Actualizar Docente");
+    }
+
+    @Override
+    public void onDocenteDelete(Docente docente) {
+        new AlertDialog.Builder(this)
+                .setTitle("Eliminar Docente")
+                .setMessage("¿Estás seguro de que deseas eliminar a " + docente.getNombreCompleto() + "?")
+                .setPositiveButton("Eliminar", (dialog, which) -> {
+                    if (dbUser.eliminarDocente(docente.getId())) {
+                        Toast.makeText(this, "Docente eliminado exitosamente", Toast.LENGTH_SHORT).show();
+                        if (docenteSeleccionado != null && docenteSeleccionado.getId() == docente.getId()) {
+                            limpiarFormularioDocente();
+                        }
+                        cargarDocentes();
+                    } else {
+                        Toast.makeText(this, "Error al eliminar docente", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
     }
 
     @Override

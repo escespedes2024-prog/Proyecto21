@@ -11,12 +11,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.textfield.TextInputEditText;
+
 import java.util.List;
 
 public class AdminUsuariosActivity extends AppCompatActivity implements UserAdapter.OnUserClickListener {
 
     private DBUser dbUser;
-    private EditText nombreInput, apellidoInput, correoInput, contraInput, telefonoInput, fechaNacInput;
+    private TextInputEditText nombreInput, apellidoInput, correoInput, contraInput, telefonoInput, fechaNacInput;
     private Button btnGuardar, btnLimpiar;
     private RecyclerView recyclerView;
     private UserAdapter userAdapter;
@@ -43,6 +45,9 @@ public class AdminUsuariosActivity extends AppCompatActivity implements UserAdap
         recyclerView = findViewById(R.id.recyclerViewUsuarios);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        
+        // Agregar formateador de fecha (formato dd/MM/yyyy según el hint)
+        fechaNacInput.addTextChangedListener(new DateTextWatcher(fechaNacInput, "dd/MM/yyyy"));
         
         cargarUsuarios();
 

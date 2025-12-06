@@ -6,9 +6,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,13 +19,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class EventosActivity extends AppCompatActivity {
+public class EventosActivity extends AppCompatActivity implements EventoAdapter.OnEventoClickListener {
 
     private DBUser dbUser;
     private RecyclerView recyclerView;
-    private EditText tituloInput, descripcionInput, fechaInput, horaInput, tipoInput;
+    private TextInputEditText tituloInput, descripcionInput, fechaInput, horaInput, tipoInput;
     private Button agregarButton;
     private List<Evento> listaEventos;
+    private Evento eventoEditando;
+    private boolean modoEdicion = false;
     private int idIglesia = 1;
 
     @Override
@@ -42,13 +47,20 @@ public class EventosActivity extends AppCompatActivity {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         
+        // Agregar formateador de fecha
+        fechaInput.addTextChangedListener(new DateTextWatcher(fechaInput, "yyyy-MM-dd"));
+        
         listaEventos = new ArrayList<>();
         cargarEventos();
 
         agregarButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                agregarEvento();
+                if (modoEdicion) {
+                    actualizarEvento();
+                } else {
+                    agregarEvento();
+                }
             }
         });
     }
@@ -91,21 +103,103 @@ public class EventosActivity extends AppCompatActivity {
         }
     }
 
+    private void cargarEventos() {
+        listaEventos = dbUser.obtenerEventos(idIglesia);
+        EventoAdapter adapter = new EventoAdapter(this, listaEventos, this);
+        recyclerView.setAdapter(adapter);
+        if (listaEventos.isEmpty()) {
+            Toast.makeText(this, "No hay eventos registrados", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void actualizarEvento() {
+        if (eventoEditando == null) {
+            Toast.makeText(this, "Error: No hay evento seleccionado", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String titulo = tituloInput.getText().toString().trim();
+        String descripcion = descripcionInput.getText().toString().trim();
+        String fecha = fechaInput.getText().toString().trim();
+        String hora = horaInput.getText().toString().trim();
+        String tipo = tipoInput.getText().toString().trim();
+
+        if (titulo.isEmpty()) {
+            Toast.makeText(this, "El título es obligatorio", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (fecha.isEmpty()) {
+            SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            fecha = formato.format(new Date());
+        }
+
+        if (hora.isEmpty()) {
+            hora = "00:00";
+        }
+
+        if (tipo.isEmpty()) {
+            tipo = "General";
+        }
+
+        eventoEditando.setTitulo(titulo);
+        eventoEditando.setDescripcion(descripcion);
+        eventoEditando.setFecha(fecha);
+        eventoEditando.setHora(hora);
+        eventoEditando.setTipo(tipo);
+
+        if (dbUser.actualizarEvento(eventoEditando)) {
+            Toast.makeText(this, "Evento actualizado exitosamente", Toast.LENGTH_SHORT).show();
+            limpiarCampos();
+            cargarEventos();
+        } else {
+            Toast.makeText(this, "Error al actualizar evento", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onEventoClick(Evento evento) {
+        eventoEditando = evento;
+        modoEdicion = true;
+        
+        tituloInput.setText(evento.getTitulo());
+        descripcionInput.setText(evento.getDescripcion());
+        fechaInput.setText(evento.getFecha());
+        horaInput.setText(evento.getHora());
+        tipoInput.setText(evento.getTipo());
+        
+        agregarButton.setText("Actualizar Evento");
+    }
+
+    @Override
+    public void onEventoDelete(Evento evento) {
+        new AlertDialog.Builder(this)
+                .setTitle("Eliminar Evento")
+                .setMessage("¿Estás seguro de que deseas eliminar el evento \"" + evento.getTitulo() + "\"?")
+                .setPositiveButton("Eliminar", (dialog, which) -> {
+                    if (dbUser.eliminarEvento(evento.getId())) {
+                        Toast.makeText(this, "Evento eliminado exitosamente", Toast.LENGTH_SHORT).show();
+                        if (eventoEditando != null && eventoEditando.getId() == evento.getId()) {
+                            limpiarCampos();
+                        }
+                        cargarEventos();
+                    } else {
+                        Toast.makeText(this, "Error al eliminar evento", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
+    }
+
     private void limpiarCampos() {
         tituloInput.setText("");
         descripcionInput.setText("");
         fechaInput.setText("");
         horaInput.setText("");
         tipoInput.setText("");
-    }
-
-    private void cargarEventos() {
-        listaEventos = dbUser.obtenerEventos(idIglesia);
-        if (listaEventos.isEmpty()) {
-            Toast.makeText(this, "No hay eventos registrados", Toast.LENGTH_SHORT).show();
-        }
-        // Aquí podrías usar un adaptador personalizado para mostrar los eventos
-        // Por ahora solo cargamos la lista
+        eventoEditando = null;
+        modoEdicion = false;
+        agregarButton.setText("Agregar Evento");
     }
 
     @Override
